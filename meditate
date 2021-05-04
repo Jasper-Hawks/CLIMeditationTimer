@@ -1,0 +1,40 @@
+#!/bin/bash
+
+function help(){ # Prints the help text
+	printf "Usage: meditate [OPTIONS] MINUTES \n"
+	printf "\n"
+	printf "OPTIONS:\n"
+	printf " -h|--help,\t Print help\n"
+	printf "\n"
+	
+return 0
+}
+
+
+if [[ $1 = "--help" ]] || [[ $1 = "-h" ]]; then # If the argument help is entered display the help text in the help function
+	help
+elif [[ $1 =~ ^-?[0-9]+$ ]];then # If the argument is a number then
+	MINUTES=$1 # Set the variable MINUTES to the first argument provided
+	SEC=0 # Set the seconds to 0 since we'll never modify them
+
+	printf "Starting timer for $MINUTES minutes in 10 seconds\n"
+	sleep 10 # Sleeps for 10 seconds
+
+	while [ $MINUTES -ge 0 ]; do # Nested while loops so that once the seconds loop is over the minute is decremented
+		while [ $SEC -ge 0 ]; do # Second while loop that will echo the current seconds on the same line replacing the previous text
+			echo -ne "[$MINUTES:$SEC]\033[0K\r"
+			SEC=`expr $SEC - 1`
+			sleep 1
+		done
+		SEC=59 # Then reset the seconds and start the loop again
+		MINUTES=`expr $MINUTES - 1` # Subtract a minute
+	done
+	mpv ~/Music/GongSound.mp3 # Once the loops are done play the GongSound
+	#*****************************************
+	#* Change the above line to the location * 
+	#* of the file that you want to play     * 
+	#*****************************************
+
+else # If anything else is entered as an argument prompt the user to view the help menu with the -h argument
+	echo "Incorrect argument provided. Use -h to display the help text."
+fi
